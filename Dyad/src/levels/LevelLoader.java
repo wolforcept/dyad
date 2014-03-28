@@ -13,7 +13,7 @@ import code.general.UnbuiltObject;
 
 public class LevelLoader {
 
-	public static Level[] levels = new Level[3];
+	public static Level[] levels = new Level[30];
 
 	public static void load() throws IOException {
 

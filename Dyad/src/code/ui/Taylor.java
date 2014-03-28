@@ -20,6 +20,7 @@ import code.auxis.Auxi;
 import code.enums.Facing;
 import code.enums.MagusMana;
 import code.enums.SpellType;
+import code.general.GameData;
 import code.general.Ivory;
 import code.general.Spell;
 import code.general.SpellButton;
@@ -56,14 +57,7 @@ public class Taylor extends JPanel {
 		this.ivory = ivory;
 		this.m = ivory.getMeasures();
 		data = new TaylorData();
-
-		try {
-			font = Font.createFont(Font.TRUETYPE_FONT,//
-					getClass().getResourceAsStream("/resources/font.ttf"));
-
-		} catch (FontFormatException e) {
-			e.printStackTrace();
-		}
+		font = GameData.font;
 
 		showFinish = false;
 

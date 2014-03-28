@@ -1,5 +1,7 @@
 package code.general;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Image;
 import java.io.IOException;
 
@@ -7,26 +9,29 @@ import javax.imageio.ImageIO;
 
 public class GameData {
 
-	public static Image title_image, start_button, exit_button;
+	public static Image title_image, start_button, exit_button, level_button;
 
-	public static void init() {
+	public static Font font;
 
-		try {
+	public static void init() throws FontFormatException, IOException {
 
-			ClassLoader loader = ClassLoader.getSystemClassLoader();
+		ClassLoader loader = ClassLoader.getSystemClassLoader();
 
-			title_image = ImageIO.read(loader
-					.getResource("resources/title_image.png"));
+		title_image = ImageIO.read(loader
+				.getResource("resources/title_image.png"));
 
-			start_button = ImageIO.read(loader
-					.getResource("resources/start_button.png"));
+		start_button = ImageIO.read(loader
+				.getResource("resources/start_button.png"));
 
-			exit_button = ImageIO.read(loader
-					.getResource("resources/exit_button.png"));
+		exit_button = ImageIO.read(loader
+				.getResource("resources/exit_button.png"));
 
-		} catch (IOException e) {
-			System.err.println("GameData.init() -> Failed to fetch image data");
-		}
+		level_button = ImageIO.read(loader
+				.getResource("resources/level_button.png"));
 
+		font = Font.createFont(
+				Font.TRUETYPE_FONT,//
+				ClassLoader.getSystemClassLoader().getResourceAsStream(
+						"resources/font.ttf"));
 	}
 }

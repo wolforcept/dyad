@@ -32,7 +32,7 @@ public class ControllerThread extends Thread {
 					taylor.repaint();
 					sleep(1000);
 					frame.dispose();
-					new MainMenu();
+					new MainMenu(false);
 					return;
 				}
 

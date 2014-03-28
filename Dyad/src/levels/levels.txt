@@ -1,9 +1,9 @@
 This text file can be changed at will.
 However, wrong text will throw deadly exceptions.
 
-Movement {
+Duality {
    6,7
-   energy = 9, lethargy = 9, mind = 9, matter = 9
+   energy = 0, lethargy = 0, mind = 0, matter = 0
    retrieve_scrolls:2
    magus:        1,1
    champion:     1,5
@@ -17,9 +17,9 @@ Movement {
    wood_wall:    5,3
 }
 
-thing thing {
-   10, 10
-   energy = 2, lethargy = 1, mind = 2
+Your First Spell {
+   6, 6
+   energy = 1, lethargy = 0, mind = 0, matter = 1
    retrieve_scrolls:2
    magus:       1,1
    champion:    4,1
@@ -27,7 +27,7 @@ thing thing {
    wood_wall:   2,0
    wood_wall:   2,1
    wood_wall:   3,2
-   wood_wall:   1,1
+   wood_wall:   5,1
    brick_wall:  2,2
    brick_wall:  5,3
    red_key:     5,5
@@ -35,11 +35,11 @@ thing thing {
    humanoid:    4,5 /dir=1;st=5
 }
 
-Duality {
-   10, 10
+Still Simple {
+   6, 6
    energy = 2, lethargy = 1, mind = 2
-   retrieve_scrolls:2
-   magus:        0,3 / TESTE
+   retrieve_scrolls:1
+   magus:        0,3 
    champion:     4,0
    scroll:       1,0
    wood_wall:    2,0
