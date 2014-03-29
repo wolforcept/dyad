@@ -108,9 +108,9 @@ public class Taylor extends JPanel {
 			graphics.fillRect(m.fieldX, m.fieldY, m.fieldWidth * m.cz,
 					m.fieldHeight * m.cz);
 
-			int hovered = drawSpellBoxes(graphics);
+			drawSpellBoxes(graphics);
 
-			drawButtons(graphics, hovered);
+			drawButtons(graphics);
 
 			drawField(graphics);
 
@@ -128,7 +128,7 @@ public class Taylor extends JPanel {
 			FontMetrics fm = g.getFontMetrics();
 
 			// DRAW TITLE
-			String title = "Tutorial: Learning the basics";
+			String title = ivory.getTitle();
 
 			int titleWidth = fm.stringWidth(title);
 
@@ -148,7 +148,7 @@ public class Taylor extends JPanel {
 
 			// DRAW SUBTITLE
 
-			String subtitle = ivory.getTitle();
+			String subtitle = ivory.getObjectiveAsString();
 			g.setFont(font.deriveFont(25f));
 			fm = g.getFontMetrics();
 
@@ -508,7 +508,7 @@ public class Taylor extends JPanel {
 				m.fieldHeight * m.cz);
 	}
 
-	private void drawButtons(Graphics g, int hovered) {
+	private void drawButtons(Graphics g) {
 		SpellButton[] b = ivory.getSpellButtons();
 		// int yy = 0;
 		for (int i = 0; i < b.length; i++) {
@@ -517,20 +517,18 @@ public class Taylor extends JPanel {
 			int x = b[i].getX();
 			int y = b[i].getY();
 
-			AlphaComposite ac = AlphaComposite.getInstance(
-					AlphaComposite.SRC_OVER, hovered == i || hovered == -1 ? 1
-							: 0.4f);
-			((Graphics2D) g).setComposite(ac);
-
-			g.drawImage(b[i].getImage(data), x, y, this);
 			if (!b[i].isPossible(ivory.getMana())) {
-
+				AlphaComposite ac = AlphaComposite.getInstance(
+						AlphaComposite.SRC_OVER, 0.4f);
+				((Graphics2D) g).setComposite(ac);
+				g.drawImage(b[i].getImage(data), x, y, this);
+				ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+				((Graphics2D) g).setComposite(ac);
 				g.drawImage(data.getImage("spell_not_available"), x, y, this);
+			} else {
+				g.drawImage(b[i].getImage(data), x, y, this);
 			}
 		}
-		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-				1);
-		((Graphics2D) g).setComposite(ac);
 	}
 
 	private void drawSpellBox(SpellType s, Graphics2D g) {

@@ -49,4 +49,5 @@ public class Level {
 	public String getTitle() {
 		return title;
 	}
+
 }

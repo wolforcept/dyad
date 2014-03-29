@@ -82,7 +82,8 @@ public abstract class FieldObject {
 
 			// DOORS
 		case "switch_door":
-			return new SwitchDoor(x, y, Integer.parseInt(properties.get("id")));
+			return new SwitchDoor(x, y, Integer.parseInt(properties.get("id")),
+					Boolean.parseBoolean(properties.get("open")));
 
 			// TOUCHABLES
 		case "switch":

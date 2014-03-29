@@ -103,8 +103,14 @@ public class Ivory {
 				}
 
 			System.out.println("putting " + o.obj + " on " + o.x + "," + o.y);
-			field[o.x][o.y] = FieldObject.makeByName(o.obj, o.x, o.y,
+
+			FieldObject obj = FieldObject.makeByName(o.obj, o.x, o.y,
 					properties);
+			if (obj instanceof SwitchDoor && ((SwitchDoor) obj).isOpened()) {
+				hiddenSwitchDoors.add((SwitchDoor) obj);
+			} else {
+				field[o.x][o.y] = obj;
+			}
 			if (o.obj.equals("champion")) {
 				champion = (Champion) field[o.x][o.y];
 				selected = true;
@@ -272,7 +278,8 @@ public class Ivory {
 		for (Iterator<SwitchDoor> iterator = hiddenSwitchDoors.iterator(); iterator
 				.hasNext();) {
 			SwitchDoor touchable = (SwitchDoor) iterator.next();
-			if (touchable.getId() == id) {
+			if (touchable.getId() == id
+					&& field[touchable.getX()][touchable.getY()] == null) {
 				field[touchable.getX()][touchable.getY()] = touchable;
 				iterator.remove();
 			}
@@ -326,5 +333,9 @@ public class Ivory {
 
 	public String getTitle() {
 		return title;
+	}
+
+	public String getObjectiveAsString() {
+		return objective.toString().toLowerCase();
 	}
 }
