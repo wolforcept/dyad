@@ -1,4 +1,4 @@
-package code.objects;
+package code.objects.player;
 
 public class Champion extends Player {
 

@@ -27,5 +27,4 @@ public class Collectable extends FieldObject {
 	public CollectableType getType() {
 		return type;
 	}
-
 }

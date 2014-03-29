@@ -10,8 +10,8 @@ import javax.swing.JFrame;
 
 import code.auxis.Auxi;
 import code.objects.Collectable;
-import code.objects.Player;
-import code.objects.Touchable;
+import code.objects.player.Player;
+import code.objects.touchables.Touchable;
 import code.ui.Taylor;
 import code.ui.TaylorData;
 
