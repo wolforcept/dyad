@@ -51,10 +51,11 @@ Still Simple {
    wood_wall:    5,2
    wood_wall:    2,3
    wood_wall:    2,4
-   switch:       2,2 /id=1
+   switch:       2,2 / id=1
    blue_key:     5,5
    keydoor:      2,5 / color=blue
    red_key:      5,1
    keydoor:      0,1 / color=red
-   switch_door:  4,2 /id=1
+   switch_door:  4,2 / id=1; open=true
+   switch_door:  4,1 / id=1; open=false
 }

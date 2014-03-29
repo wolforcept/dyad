@@ -29,6 +29,7 @@ public class LevelLoader {
 				nextLine = br.readLine();
 				if (nextLine == null)
 					return;
+
 			} while (!nextLine.contains("{"));
 
 			/*
