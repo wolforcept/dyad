@@ -3,7 +3,6 @@ package code.ui;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -24,12 +23,12 @@ import code.general.GameData;
 import code.general.Ivory;
 import code.general.Spell;
 import code.general.SpellButton;
-import code.objects.Champion;
 import code.objects.Collectable;
 import code.objects.FieldObject;
 import code.objects.Humanoid;
-import code.objects.Magus;
-import code.objects.Player;
+import code.objects.player.Champion;
+import code.objects.player.Magus;
+import code.objects.player.Player;
 
 public class Taylor extends JPanel {
 

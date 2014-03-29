@@ -1,8 +1,10 @@
-package code.objects;
+package code.objects.player;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import code.objects.Collectable;
+import code.objects.FieldObject;
 import code.objects.Collectable.CollectableType;
 
 public class Player extends FieldObject {

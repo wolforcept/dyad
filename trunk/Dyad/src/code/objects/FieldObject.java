@@ -1,11 +1,15 @@
 package code.objects;
 
 import java.awt.Point;
+import java.util.HashMap;
 
-import code.ui.TaylorData;
 import code.enums.Material;
 import code.objects.Collectable.CollectableType;
-import code.objects.Touchable.TouchableType;
+import code.objects.player.Champion;
+import code.objects.player.Magus;
+import code.objects.touchables.KeyDoor;
+import code.objects.touchables.Switch;
+import code.ui.TaylorData;
 
 public abstract class FieldObject {
 
@@ -55,7 +59,8 @@ public abstract class FieldObject {
 		currentImage = (currentImage == numberOfImages) ? 0 : currentImage + 1;
 	}
 
-	public static FieldObject makeByName(String name, int x, int y) {
+	public static FieldObject makeByName(String name, int x, int y,
+			HashMap<String, String> properties) {
 
 		switch (name) {
 
@@ -75,18 +80,15 @@ public abstract class FieldObject {
 		case "blue_key":
 			return new Collectable(x, y, CollectableType.BLUE_KEY);
 
+			// DOORS
+		case "switch_door":
+			return new SwitchDoor(x, y, Integer.parseInt(properties.get("id")));
+
 			// TOUCHABLES
-		case "red_door":
-			return new Touchable(x, y, TouchableType.RED_DOOR, Material.WOOD);
-		case "blue_door":
-			return new Touchable(x, y, TouchableType.BLUE_DOOR, Material.WOOD);
-		case "switch1_door":
-			return new Touchable(x, y, TouchableType.SWITCH1_DOOR,
-					Material.METAL);
-		case "switch1":
-			return new Touchable(x, y, TouchableType.SWITCH1, Material.METAL);
-		case "switch2":
-			return new Touchable(x, y, TouchableType.SWITCH2, Material.METAL);
+		case "switch":
+			return new Switch(x, y, Integer.parseInt(properties.get("id")));
+		case "keydoor":
+			return new KeyDoor(x, y, properties.get("color"));
 
 			// WALLS
 		case "wood_wall":
@@ -105,8 +107,6 @@ public abstract class FieldObject {
 			return new Core(x, y);
 		case "scroll":
 			return new Collectable(x, y, CollectableType.SCROLL);
-		case "door":
-			return new Door(x, y);
 		default:
 			return null;
 		}

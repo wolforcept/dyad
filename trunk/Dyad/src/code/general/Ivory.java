@@ -3,6 +3,7 @@ package code.general;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 
@@ -11,14 +12,12 @@ import code.enums.Facing;
 import code.enums.MagusMana;
 import code.enums.ObjectiveType;
 import code.enums.SpellType;
-import code.general.UnbuiltObject;
-import code.objects.Champion;
 import code.objects.Collectable;
 import code.objects.FieldObject;
-import code.objects.Magus;
-import code.objects.Player;
-import code.objects.Touchable;
-import code.objects.Touchable.TouchableType;
+import code.objects.SwitchDoor;
+import code.objects.player.Champion;
+import code.objects.player.Magus;
+import code.objects.player.Player;
 import code.ui.Measures;
 
 public class Ivory {
@@ -46,6 +45,8 @@ public class Ivory {
 
 	private HashMap<MagusMana, Integer> manapool;
 
+	private LinkedList<SwitchDoor> hiddenSwitchDoors;
+
 	private int width, height;
 	private SpellButton[] spellButtons;
 
@@ -63,6 +64,7 @@ public class Ivory {
 
 		target = level.getTarget();
 		objective = level.getObjective();
+		hiddenSwitchDoors = new LinkedList<>();
 
 		manapool = new HashMap<>();
 		for (Entry<String, Integer> e : level.getMana().entrySet()) {
@@ -93,8 +95,16 @@ public class Ivory {
 
 		for (UnbuiltObject o : level.getObjectList()) {
 
+			HashMap<String, String> properties = new HashMap<>();
+			if (o.properties != null)
+				for (int j = 0; j < o.properties.length; j++) {
+					String[] property = o.properties[j].split("=");
+					properties.put(property[0], property[1]);
+				}
+
 			System.out.println("putting " + o.obj + " on " + o.x + "," + o.y);
-			field[o.x][o.y] = FieldObject.makeByName(o.obj, o.x, o.y);
+			field[o.x][o.y] = FieldObject.makeByName(o.obj, o.x, o.y,
+					properties);
 			if (o.obj.equals("champion")) {
 				champion = (Champion) field[o.x][o.y];
 				selected = true;
@@ -103,19 +113,7 @@ public class Ivory {
 				magus = (Magus) field[o.x][o.y];
 				selected = false;
 			}
-			String[] properties = o.properties;
-			if (o.properties != null)
-				for (int j = 0; j < properties.length; j++) {
-					System.out.println("    " + j + ">" + properties[j]);
-					String propertyName = properties[j].split("=")[0];
-					int propertyVal = Integer
-							.parseInt(properties[j].split("=")[1]);
-					switch (propertyName) {
-					case "str":
-						field[o.x][o.y].setStrength(propertyVal);
-						break;
-					}
-				}
+
 		}
 	}
 
@@ -258,23 +256,29 @@ public class Ivory {
 		return new Dimension(width, height);
 	}
 
-	public void switchSwitch(int i) {
-		// switches[i] = !switches[i];
-		Point p = exists(TouchableType.valueOf("SWITCH" + i + "_DOOR"));
-		if (p != null) {
-			field[p.x][p.y] = null;
-		}
-	}
+	public void switchTouchablesById(int id) {
+		LinkedList<SwitchDoor> switcheDoorsToHide = new LinkedList<>();
+		for (int x = 0; x < m.fieldWidth; x++) {
+			for (int y = 0; y < m.fieldHeight; y++) {
 
-	private Point exists(TouchableType t) {
-		for (int x = 0; x < field.length; x++) {
-			for (int y = 0; y < field[0].length; y++) {
-				if (field[x][y] instanceof Touchable
-						&& ((Touchable) field[x][y]).getType().equals(t))
-					return field[x][y].getPosition();
+				FieldObject o = field[x][y];
+
+				if (o instanceof SwitchDoor && ((SwitchDoor) o).getId() == id) {
+					switcheDoorsToHide.add((SwitchDoor) o);
+					field[x][y] = null;
+				}
 			}
 		}
-		return null;
+		for (Iterator<SwitchDoor> iterator = hiddenSwitchDoors.iterator(); iterator
+				.hasNext();) {
+			SwitchDoor touchable = (SwitchDoor) iterator.next();
+			if (touchable.getId() == id) {
+				field[touchable.getX()][touchable.getY()] = touchable;
+				iterator.remove();
+			}
+		}
+
+		hiddenSwitchDoors.addAll(switcheDoorsToHide);
 	}
 
 	public ObjectiveType getObjective() {

@@ -12,7 +12,6 @@ import code.enums.MagusMana;
 import code.enums.Material;
 import code.enums.SpellType;
 import code.objects.Collectable;
-import code.objects.Touchable;
 
 public class TaylorData {
 
@@ -26,11 +25,16 @@ public class TaylorData {
 		addImage("magus_glow");
 		addImage("champion_glow");
 		addImage("core", 360);
+		addImage("switch_door", 1);
 		addImage("humanoid");
 		addImage("back");
 		addImage("spell_not_available");
 
 		addImage("unable_button", "spells/unable_button");
+
+		addImage("blue_door", "touchables/blue_door");
+		addImage("red_door", "touchables/red_door");
+		addImage("switch", "touchables/switch");
 
 		for (int i = 0; i < 10; i++) {
 			String name = "number_" + i;
@@ -54,12 +58,6 @@ public class TaylorData {
 		for (int i = 0; i < collectables.length; i++) {
 			String name = collectables[i].toString().toLowerCase();
 			addImage(name, "collectables/" + name, collectables[i].getNoi());
-		}
-
-		Touchable.TouchableType[] touchables = Touchable.TouchableType.values();
-		for (int i = 0; i < touchables.length; i++) {
-			String name = touchables[i].toString().toLowerCase();
-			addImage(name, "touchables/" + name, touchables[i].getNoi());
 		}
 
 		SpellType[] vals = SpellType.values();

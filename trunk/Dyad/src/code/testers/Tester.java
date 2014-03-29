@@ -19,7 +19,7 @@ public class Tester {
 		} catch (IOException e) {
 			System.err.println("inits -> Failed to fetch image data");
 		} catch (FontFormatException e) {
-			
+
 			System.err.println("inits -> Font Format Exception");
 		}
 		new MainMenu(true);
