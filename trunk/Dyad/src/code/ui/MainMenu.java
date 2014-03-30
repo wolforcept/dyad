@@ -9,23 +9,26 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import levels.LevelLoader;
+import code.editor.LevelEditor;
+import code.general.Controller;
 import code.general.GameData;
 import code.general.Level;
-import code.general.Controller;
 
 public class MainMenu {
 	class LevelGroup {
@@ -56,9 +59,12 @@ public class MainMenu {
 	private JFrame frame;
 	// private JList<LevelGroup> levelList;
 
-	private String MAINMENU_CARD = "mainmanu", PLAY_CARD = "tutorial";
+	final private String MAINMENU_CARD = "mainmanu", PLAY_CARD = "tutorial";
+	final int MAINMENU_BUTTON_Y_DISTANCE = -8;
+
 	private JPanel content;
-	private ImageButton button_start, button_exit;
+	private ImageButton button_start, button_editor, button_exit,
+			button_custom, button_back;
 
 	public MainMenu(boolean firstTime) {
 
@@ -79,10 +85,20 @@ public class MainMenu {
 			mainMenu.setOpaque(false);
 			mainMenu.add(buttons_main, BorderLayout.SOUTH);
 
-			button_start = new ImageButton(GameData.start_button);
+			button_start = new ImageButton(GameData.mainmenu_button, "Start",
+					MAINMENU_BUTTON_Y_DISTANCE);
 			buttons_main.add(button_start);
 
-			button_exit = new ImageButton(GameData.exit_button);
+			button_custom = new ImageButton(GameData.mainmenu_button, "Custom",
+					MAINMENU_BUTTON_Y_DISTANCE);
+			buttons_main.add(button_custom);
+
+			button_editor = new ImageButton(GameData.mainmenu_button, "Editor",
+					MAINMENU_BUTTON_Y_DISTANCE);
+			buttons_main.add(button_editor);
+
+			button_exit = new ImageButton(GameData.mainmenu_button, "Exit",
+					MAINMENU_BUTTON_Y_DISTANCE);
 			buttons_main.add(button_exit);
 
 			button_start.addActionListener(new ActionListener() {
@@ -90,6 +106,44 @@ public class MainMenu {
 				public void actionPerformed(ActionEvent arg0) {
 					((CardLayout) (content.getLayout())).//
 							show(content, PLAY_CARD);
+				}
+			});
+
+			button_editor.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					new LevelEditor();
+					frame.setVisible(false);
+					frame.dispose();
+				}
+			});
+
+			button_custom.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					JFileChooser filechooser = new JFileChooser();
+					filechooser
+							.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+					filechooser.setMultiSelectionEnabled(false);
+					filechooser.setAcceptAllFileFilterUsed(false);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter(
+							".dyle", "dyle");
+					filechooser.setFileFilter(filter);
+
+					int opt = filechooser.showOpenDialog(null);
+
+					if (opt == JFileChooser.APPROVE_OPTION) {
+						String path = filechooser.getSelectedFile()
+								.getAbsolutePath();
+
+						try {
+							new Controller(LevelLoader.loadLevel(path), true);
+						} catch (IllegalArgumentException | IOException e) {
+							System.out.println("Could not init controller");
+						}
+						frame.setVisible(false);
+						frame.dispose();
+					}
 				}
 			});
 
@@ -103,32 +157,43 @@ public class MainMenu {
 
 		// LEVELS CARD
 		{
-			JPanel levelsMenu = new JPanel(new GridLayout(3, 10));
+			JPanel levelsMenu = new JPanel(new FlowLayout());
 			levelsMenu.setOpaque(false);
 			content.add(levelsMenu, PLAY_CARD);
 
-			for (int i = 0; i < 30; i++) {
-				if (i < LevelLoader.levels.length) {
-					final Level level = LevelLoader.levels[i];
+			button_back = new ImageButton(GameData.mainmenu_button, "Back",
+					MAINMENU_BUTTON_Y_DISTANCE);
+			levelsMenu.add(button_back);
 
-					ImageButton lb = new ImageButton(GameData.level_button, ""
-							+ (i + 1));
-					lb.setOpaque(false);
-					levelsMenu.add(lb);
+			button_back.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					((CardLayout) (content.getLayout())).//
+							show(content, MAINMENU_CARD);
+				}
+			});
 
-					lb.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
+			for (int i = 0; i < LevelLoader.levels.length; i++) {
+				final Level level = LevelLoader.levels[i];
+
+				ImageButton lb = new ImageButton(GameData.level_button, ""
+						+ (i + 1), -10);
+				lb.setOpaque(false);
+				levelsMenu.add(lb);
+
+				lb.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						if (level != null)
 							try {
-								new Controller(level);
+								new Controller(level, false);
 								frame.setVisible(false);
 								frame.dispose();
 							} catch (IOException ex) {
 								ex.printStackTrace();
 							}
-						}
-					});
-				}
+					}
+				});
 			}
 		}
 
@@ -153,7 +218,8 @@ public class MainMenu {
 
 		@Override
 		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
+			g.setColor(Color.black);
+			g.fillRect(0, 0, getWidth(), getHeight());
 
 			if (background != null) {
 				Insets insets = getInsets();
@@ -173,37 +239,43 @@ public class MainMenu {
 	class ImageButton extends JButton {
 
 		private static final long serialVersionUID = 1L;
-		private Image background;
+		private BufferedImage background;
 		private String text;
+		private int top;
 
-		public ImageButton(Image background) {
+		public ImageButton(BufferedImage background, String text) {
 			this.background = background;
 			setPreferredSize(new Dimension(background.getWidth(this),
 					background.getHeight(this)));
-			text = null;
+			this.text = text;
+			top = 0;
 		}
 
-		public ImageButton(Image background, String text) {
-			this(background);
-			this.text = text;
+		public ImageButton(BufferedImage background, String text, int top) {
+			this(background, text);
+			this.top = top;
 		}
 
 		@Override
 		public void paint(Graphics g) {
 
 			if (background != null) {
-				g.drawImage(background, 0, 0, this);
+				int bx = getWidth() / 2 - background.getWidth() / 2;
+				int by = getHeight() / 2 - background.getHeight() / 2;
+
+				g.drawImage(background, bx, by, this);
 			}
 
 			if (text != null) {
+
 				Font font = GameData.font.deriveFont(50f);
 				g.setFont(font);
 				((Graphics2D) g).setRenderingHints(new RenderingHints(
 						RenderingHints.KEY_TEXT_ANTIALIASING,
 						RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
 				FontMetrics fm = getFontMetrics(font);
-				int tx = 75 - fm.stringWidth(text);
-				int ty = 65;
+				int tx = getWidth() / 2 - fm.stringWidth(text) / 2;
+				int ty = top + getHeight() / 2 + fm.getAscent() / 2;
 				g.setColor(new Color(0, 0, 0, 0.7f));
 				g.drawString(text, tx + 2, ty + 2);
 				g.setColor(new Color(1, 1, 1, 0.8f));

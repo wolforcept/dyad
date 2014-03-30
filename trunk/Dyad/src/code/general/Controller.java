@@ -21,7 +21,8 @@ public class Controller {
 	private Taylor taylor;
 	private Ivory ivory;
 
-	public Controller(Level level) throws IOException, IllegalArgumentException {
+	public Controller(Level level, boolean custom) throws IOException,
+			IllegalArgumentException {
 
 		if (level == null)
 			throw new IllegalArgumentException("NULL LEVEL");
@@ -106,7 +107,7 @@ public class Controller {
 
 		frame.add(taylor);
 		taylor.requestFocus();
-		new ControllerThread(ivory, taylor, frame).start();
+		new ControllerThread(ivory, taylor, frame,custom).start();
 		taylor.setPreferredSize(TaylorData.TAYLOR_SIZE);
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

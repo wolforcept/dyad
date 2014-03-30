@@ -1,11 +1,18 @@
 package code.general;
 
-public class UnbuiltObject {
+import java.io.Serializable;
+import java.util.HashMap;
+
+public class UnbuiltObject implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	String obj;
 	int x, y;
-	String[] properties;
+	HashMap<String, String> properties;
 
-	public UnbuiltObject(String obj, int x, int y, String[] properties) {
+	public UnbuiltObject(String obj, int x, int y,
+			HashMap<String, String> properties) {
 		this.obj = obj;
 		this.x = x;
 		this.y = y;

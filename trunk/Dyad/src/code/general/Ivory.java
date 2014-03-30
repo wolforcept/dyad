@@ -95,12 +95,7 @@ public class Ivory {
 
 		for (UnbuiltObject o : level.getObjectList()) {
 
-			HashMap<String, String> properties = new HashMap<>();
-			if (o.properties != null)
-				for (int j = 0; j < o.properties.length; j++) {
-					String[] property = o.properties[j].split("=");
-					properties.put(property[0], property[1]);
-				}
+			HashMap<String, String> properties = o.properties;
 
 			System.out.println("putting " + o.obj + " on " + o.x + "," + o.y);
 

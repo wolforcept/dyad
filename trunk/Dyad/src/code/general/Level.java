@@ -1,12 +1,15 @@
 package code.general;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import code.enums.ObjectiveType;
 
-public class Level {
+public class Level implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String title;
 	private Dimension gridSize;
@@ -48,6 +51,13 @@ public class Level {
 
 	public String getTitle() {
 		return title;
+	}
+
+	@Override
+	public String toString() {
+		return "Level [title=" + title + ", gridSize=" + gridSize + ", mana="
+				+ mana + ", objective=" + objective + ", target=" + target
+				+ ", objectList=" + objectList + "]";
 	}
 
 }

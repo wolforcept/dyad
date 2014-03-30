@@ -11,14 +11,17 @@ import code.ui.Taylor;
 
 public class ControllerThread extends Thread {
 
-	Ivory ivory;
-	Taylor taylor;
-	JFrame frame;
+	private Ivory ivory;
+	private Taylor taylor;
+	private JFrame frame;
+	private boolean custom;
 
-	public ControllerThread(Ivory ivory, Taylor taylor, JFrame frame) {
+	public ControllerThread(Ivory ivory, Taylor taylor, JFrame frame,
+			boolean custom) {
 		this.ivory = ivory;
 		this.taylor = taylor;
 		this.frame = frame;
+		this.custom = custom;
 	}
 
 	public void run() {
@@ -32,7 +35,7 @@ public class ControllerThread extends Thread {
 					taylor.repaint();
 					sleep(1000);
 					frame.dispose();
-					new MainMenu(false);
+					new MainMenu(custom);
 					return;
 				}
 
