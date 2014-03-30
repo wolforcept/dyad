@@ -13,7 +13,7 @@ public class DyadGame {
 	public static void main(String[] args) {
 
 		try {
-			LevelLoader.load();
+			LevelLoader.preload();
 			TaylorData.init();
 			GameData.init();
 		} catch (IOException e) {

@@ -15,11 +15,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -30,6 +31,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import code.enums.ObjectiveType;
+import code.general.Level;
+import code.general.UnbuiltObject;
 import code.ui.MainMenu;
 import code.ui.TaylorData;
 
@@ -38,7 +42,7 @@ public class LevelEditor {
 	JFrame mainframe, objsframe, propsframe;
 	EditorTaylor taylor;
 	ObjectsTaylor objsTaylor;
-	int width, height;
+	int width, height, energy, lethargy, mind, matter;
 	final int cz = 40;
 	final String[] objects = { "magus", "champion", "wood_wall", "scroll",
 			"switch", "switch_door", "keydoor", "key" };
@@ -79,8 +83,8 @@ public class LevelEditor {
 		filechooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		filechooser.setMultiSelectionEnabled(false);
 		filechooser.setAcceptAllFileFilterUsed(false);
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("txt",
-				"txt");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(".dyle",
+				"dyle");
 		filechooser.setFileFilter(filter);
 
 		try {
@@ -110,10 +114,12 @@ public class LevelEditor {
 				int x = (int) ((float) e.getX() / cz);
 				int y = (int) ((float) e.getY() / cz);
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					if (field[x][y] != null)
-						field[x][y] = null;
-					else
-						field[x][y] = new EditorObject(objects[selected]);
+					if (x < field.length && y < field[x].length) {
+						if (field[x][y] != null)
+							field[x][y] = null;
+						else
+							field[x][y] = new EditorObject(objects[selected]);
+					}
 				}
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
@@ -138,11 +144,15 @@ public class LevelEditor {
 		});
 
 		JPanel propertiesPanel = new JPanel();
-		propertiesPanel.setLayout(new GridLayout(4, 1));
+		propertiesPanel.setLayout(new GridLayout(8, 1));
 		nameTextField = new JTextField("my dyad map");
 		propertiesPanel.add(nameTextField);
-		propertiesPanel.add(new Property("width", width + ""));
-		propertiesPanel.add(new Property("height", height + ""));
+		propertiesPanel.add(new Property("width", width, 3, 10));
+		propertiesPanel.add(new Property("height", height, 3, 10));
+		propertiesPanel.add(new Property("energy", 0, 0, 9));
+		propertiesPanel.add(new Property("lethargy", 0, 0, 9));
+		propertiesPanel.add(new Property("mind", 0, 0, 9));
+		propertiesPanel.add(new Property("matter", 0, 0, 9));
 
 		JPanel propertiesButtonsPanel = new JPanel();
 		propertiesButtonsPanel.setLayout(new GridLayout(1, 2));
@@ -227,6 +237,31 @@ public class LevelEditor {
 	}
 
 	private void save() {
+
+		String title = nameTextField.getText();
+		Dimension gridSize = new Dimension(width, height);
+		HashMap<String, Integer> mana = new HashMap<>();
+
+		mana.put("energy", energy);
+		mana.put("lethargy", lethargy);
+		mana.put("mind", mind);
+		mana.put("matter", matter);
+
+		ObjectiveType objective = ObjectiveType.RETRIEVE_SCROLLS;
+		int target = 2;
+		LinkedList<UnbuiltObject> objectList = new LinkedList<>();
+
+		for (int x = 0; x < field.length; x++) {
+			for (int y = 0; y < field[x].length; y++) {
+				if (field[x][y] != null)
+					objectList.add(new UnbuiltObject(field[x][y].name, x, y,
+							field[x][y].properties));
+			}
+		}
+
+		Level level = new Level(title, gridSize, mana, objective, target,
+				objectList);
+
 		try {
 
 			int opt = filechooser.showSaveDialog(mainframe);
@@ -235,13 +270,14 @@ public class LevelEditor {
 
 			String filepath = filechooser.getSelectedFile().getAbsolutePath();
 
-			if (!filepath.endsWith(".txt")) {
-				filepath += ".txt";
+			if (!filepath.endsWith(".dyle")) {
+				filepath += ".dyle";
 			}
 
-			BufferedWriter out = new BufferedWriter(new FileWriter(filepath));
-
-			createSave(out);
+			FileOutputStream fout = new FileOutputStream(filepath);
+			ObjectOutputStream out = new ObjectOutputStream(fout);
+			out.writeObject(level);
+			out.close();
 
 			System.out.println("File Saved to " + filepath);
 		} catch (IOException e) {
@@ -249,40 +285,26 @@ public class LevelEditor {
 		}
 	}
 
-	private void createSave(BufferedWriter out) throws IOException {
-
-		out.write(nameTextField.getText() + " {");
-		out.newLine();
-
-		out.write(width + "," + height);
-		out.newLine();
-
-		out.write("energy = 0, lethargy = 0, mind = 0, matter = 0");
-		out.newLine();
-
-		out.write("retrieve_scrolls:2");
-		out.newLine();
-
-		for (int x = 0; x < field.length; x++) {
-			for (int y = 0; y < field[x].length; y++) {
-				if (field[x][y] != null) {
-					out.write("    " + field[x][y].toSave(x, y));
-					out.newLine();
-				}
-			}
-		}
-
-		out.write("}");
-
-		out.close();
-	}
-
-	private void setProperty(String prop, String val) {
-		if (prop.equals("width")) {
-			width = Math.min(10, Integer.parseInt(val));
-		}
-		if (prop.equals("height")) {
-			height = Math.min(10, Integer.parseInt(val));
+	private void setProperty(String prop, int val) {
+		switch (prop) {
+		case "width":
+			width = Math.min(10, val);
+			break;
+		case "height":
+			height = Math.min(10, val);
+			break;
+		case "energy":
+			energy = Math.min(10, val);
+			break;
+		case "lethargy":
+			lethargy = Math.min(10, val);
+			break;
+		case "mind":
+			mind = Math.min(10, val);
+			break;
+		case "matter":
+			matter = Math.min(10, val);
+			break;
 		}
 		reEverything();
 	}
@@ -429,23 +451,36 @@ public class LevelEditor {
 
 		private static final long serialVersionUID = 1L;
 
-		JTextField tfield;
-		String text;
-		JButton butt;
+		int value;
 
-		public Property(String textArg, String pre) {
-			text = textArg;
+		public Property(final String text, int pre, final int min, final int max) {
 			setLayout(new FlowLayout());
 			add(new JLabel(text));
-			tfield = new JTextField(10);
-			tfield.setText(pre);
+			final JTextField tfield = new JTextField(5);
+			value = pre;
+			tfield.setText(value + "");
 			add(tfield);
-			butt = new JButton(">");
-			add(butt);
-			butt.addActionListener(new ActionListener() {
+			JButton buttminus = new JButton("-");
+			add(buttminus);
+			buttminus.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					setProperty(text, tfield.getText());
+					value--;
+					value = Math.max(min, value);
+					tfield.setText(value + "");
+					setProperty(text, value);
+				}
+			});
+
+			JButton buttplus = new JButton("+");
+			add(buttplus);
+			buttplus.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					value++;
+					value = Math.min(max, value);
+					tfield.setText(value + "");
+					setProperty(text, value);
 				}
 			});
 		}
