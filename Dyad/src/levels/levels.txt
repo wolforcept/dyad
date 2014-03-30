@@ -56,6 +56,6 @@ Still Simple {
    keydoor:      2,5 / color=blue
    red_key:      5,1
    keydoor:      0,1 / color=red
-   switch_door:  4,2 / id=1; open=true
-   switch_door:  4,1 / id=1; open=false
+   switch_door:  4,2 / id=1; open=false
 }
+

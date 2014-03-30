@@ -8,7 +8,7 @@ import code.general.GameData;
 import code.ui.MainMenu;
 import code.ui.TaylorData;
 
-public class Tester {
+public class DyadGame {
 
 	public static void main(String[] args) {
 

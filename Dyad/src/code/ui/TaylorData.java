@@ -34,7 +34,7 @@ public class TaylorData {
 
 		addImage("blue_door", "touchables/blue_door");
 		addImage("red_door", "touchables/red_door");
-		addImage("switch", "touchables/switch");
+		addImage("switch", "touchables/switch", 2);
 
 		for (int i = 0; i < 10; i++) {
 			String name = "number_" + i;
