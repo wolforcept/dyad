@@ -32,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import code.enums.ObjectiveType;
+import code.general.GameData;
 import code.general.Level;
 import code.general.UnbuiltObject;
 import code.ui.MainMenu;
@@ -50,7 +51,7 @@ public class LevelEditor {
 	int selected = 0;
 	TaylorData data = new TaylorData();
 	EditorObject[][] field;
-	JTextField nameTextField;
+	JButton nameTextField;
 	JFileChooser filechooser;
 
 	public LevelEditor() {
@@ -145,7 +146,14 @@ public class LevelEditor {
 
 		JPanel propertiesPanel = new JPanel();
 		propertiesPanel.setLayout(new GridLayout(8, 1));
-		nameTextField = new JTextField("my dyad map");
+		nameTextField = new JButton("my dyad map");
+		nameTextField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				nameTextField.setText(JOptionPane
+						.showInputDialog("Level name?"));
+			}
+		});
 		propertiesPanel.add(nameTextField);
 		propertiesPanel.add(new Property("width", width, 3, 10));
 		propertiesPanel.add(new Property("height", height, 3, 10));
@@ -319,9 +327,12 @@ public class LevelEditor {
 			properties = new HashMap<>();
 			switch (name) {
 			case "keydoor":
-				properties.put("color", "red");
 			case "key":
 				properties.put("color", "red");
+				break;
+			case "switch_door":
+				properties.put("opened", "false");
+				properties.put("id", "1");
 			}
 
 		}
@@ -370,6 +381,17 @@ public class LevelEditor {
 				}
 				break;
 
+			case "switch_door":
+				String id = JOptionPane.showInputDialog("Switch ID", "1");
+				String opened = JOptionPane.showConfirmDialog(null,
+						"Switch opened?", "Switch", JOptionPane.YES_NO_OPTION) == 0 ? "true"
+						: "false";
+				properties.remove("id");
+				properties.remove("opened");
+				properties.put("id", id);
+				properties.put("opened", opened);
+				break;
+
 			default:
 			}
 		}
@@ -381,6 +403,8 @@ public class LevelEditor {
 
 		@Override
 		public void paint(Graphics g) {
+			setFont(GameData.font.deriveFont(10f));
+
 			g.clearRect(0, 0, getWidth(), getHeight());
 			// IMAGES
 			{
@@ -390,7 +414,19 @@ public class LevelEditor {
 						if (field[x][y] != null) {
 							BufferedImage img = data.getImage(field[x][y]
 									.getImageName());
-							g.drawImage(img, x * cz, y * cz, this);
+							switch (field[x][y].name) {
+							case "switch_door":
+								g.drawImage(img, x * cz, y * cz, this);
+								g.drawString(field[x][y].properties.get("id"),
+										x * cz, y * cz + cz - 10);
+								g.drawString(
+										field[x][y].properties.get("opened").equals("true") ? "opened" : "closed", x
+												* cz, y * cz + cz);
+								break;
+
+							default:
+								g.drawImage(img, x * cz, y * cz, this);
+							}
 						}
 
 					}
