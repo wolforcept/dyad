@@ -333,6 +333,10 @@ public class LevelEditor {
 			case "switch_door":
 				properties.put("opened", "false");
 				properties.put("id", "1");
+				break;
+			case "switch":
+				properties.put("id", "1");
+				break;
 			}
 
 		}
@@ -382,16 +386,22 @@ public class LevelEditor {
 				break;
 
 			case "switch_door":
-				String id = JOptionPane.showInputDialog("Switch ID", "1");
+				String id_switch_door = JOptionPane.showInputDialog(
+						"Switch ID", properties.get("id"));
 				String opened = JOptionPane.showConfirmDialog(null,
 						"Switch opened?", "Switch", JOptionPane.YES_NO_OPTION) == 0 ? "true"
 						: "false";
 				properties.remove("id");
 				properties.remove("opened");
-				properties.put("id", id);
+				properties.put("id", id_switch_door);
 				properties.put("opened", opened);
 				break;
-
+			case "switch":
+				String id_switch = JOptionPane.showInputDialog("Switch ID",
+						properties.get("id"));
+				properties.remove("id");
+				properties.put("id", id_switch);
+				break;
 			default:
 			}
 		}
@@ -420,8 +430,16 @@ public class LevelEditor {
 								g.drawString(field[x][y].properties.get("id"),
 										x * cz, y * cz + cz - 10);
 								g.drawString(
-										field[x][y].properties.get("opened").equals("true") ? "opened" : "closed", x
-												* cz, y * cz + cz);
+										field[x][y].properties.get("opened")
+												.equals("true") ? "opened"
+												: "closed", x * cz + 5, y * cz
+												+ cz - 5);
+								break;
+
+							case "switch":
+								g.drawImage(img, x * cz, y * cz, this);
+								g.drawString(field[x][y].properties.get("id"),
+										x * cz + 5, y * cz + cz);
 								break;
 
 							default:
@@ -469,7 +487,6 @@ public class LevelEditor {
 				case "key":
 					g.drawImage(data.getImage("red_key"), 0, cz * y, this);
 					break;
-
 				default:
 					g.drawImage(data.getImage(objects[y]), 0, cz * y, this);
 				}
